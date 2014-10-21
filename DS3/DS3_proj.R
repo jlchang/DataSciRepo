@@ -33,15 +33,13 @@ train_activity <-  read.table("UCI HAR Dataset/train/y_train.txt", colClasses = 
 test_subj <-  read.table("UCI HAR Dataset/test/subject_test.txt",header=F,sep="")
 test_activity <-  read.table("UCI HAR Dataset/test/y_test.txt", colClasses = "factor",header=F,sep="")
 
-
-#train_X <- read.table("UCI HAR Dataset/train/X_train.txt",header=F,sep="")
-#test_X <- read.table("UCI HAR Dataset/test/X_test.txt",header=F,sep="")
-
 ###merge train and test data
 activity <- rbind(train_activity,test_activity)
 subject <- rbind(train_subj,test_subj)
 names(activity) <- "activity"
 names(subject) <- "subject"
+#clean up workspace - remove unneeded objects
+rm(train_subj,train_activity,test_subj,test_activity)
 
 ###replace activity numbers with descriptive activity names
 #activity <- gsub("1","WALKING",activity)
@@ -52,7 +50,7 @@ names(subject) <- "subject"
 #activity <- gsub("6","LAYING",activity)
 #TODO### instead of hardcoding as above, pull in activity_labels info and gsub values into activity
 #activity_map <- read.table("UCI HAR Dataset/activity_labels.txt",header=F,sep="")
-activity$V1 <- factor(activity$V1, labels = c("WALKING","WALKING_UPSTAIRS","WALKING_DOWNSTAIRS","SITTING","STANDING","LAYING"))
+activity$activity <- factor(activity$activity, labels = c("WALKING","WALKING_UPSTAIRS","WALKING_DOWNSTAIRS","SITTING","STANDING","LAYING"))
 
 ###load desired column of features.txt file
 ###mycols is device to skip loading the first column into memory - may turn out to need those indices...
@@ -61,24 +59,9 @@ feature_names <- unlist(read.table("UCI HAR Dataset/features.txt",colClasses=myc
 
 ###identify subset of mean and std features from full feature list
 #desired_feature_indices <- grep("mean|std", clean_feature_names)
-desired_feature_indices <- grep("mean\\(\\)|std\\(\\)", feature_names)
+#desired_feature_indices <- grep("mean\\(\\)|std\\(\\)", feature_names)
 desired_feature_indicesL <- grepl("mean\\(\\)|std\\(\\)", feature_names)
 #desired_features <- feature_names[desired_feature_indices]
-
-
-### Give X columns the feature names from features.txt
-### pull only desired columns into data set with desired_feature_indices
-### create desired_cols vector to restrict loaded features
-#load training and test set
-train_X <- read.table("UCI HAR Dataset/train/X_train.txt",header=F, col.names = feature_names, sep="")
-train_X_sub <- train_X[desired_feature_indicesL]
-test_X <- read.table("UCI HAR Dataset/test/X_test.txt",header=F,col.names = feature_names, sep="")
-test_X_sub <- test_X[desired_feature_indicesL]
-#combine in same order as subj and activity data
-combo_X <- rbind(train_X_sub,test_X_sub)
-
-##TODO - align subject, activity and X data in one data frame
-combo <- cbind(subject, activity, combo_X)
 
 ###remove invalid characters from feature names
 #lapply(feature_names, )
@@ -88,5 +71,26 @@ clean_feature_names <- gsub("-", "_", clean_feature_names)
 clean_feature_names <- gsub("\\,", "_", clean_feature_names)
 clean_feature_names <- gsub("BodyBody", "Body", clean_feature_names)
 ###set column names to labels from features.txt
+
+### Give X columns the feature names from features.txt
+### pull only desired columns into data set with desired_feature_indices
+### create desired_cols vector to restrict loaded features
+#load training and test set
+train_X <- read.table("UCI HAR Dataset/train/X_train.txt",header=F, col.names = clean_feature_names, sep="")
+train_X_sub <- train_X[desired_feature_indicesL]
+test_X <- read.table("UCI HAR Dataset/test/X_test.txt",header=F,col.names = clean_feature_names, sep="")
+test_X_sub <- test_X[desired_feature_indicesL]
+
+#combine in same order as subj and activity data
+combo_X <- rbind(train_X_sub,test_X_sub)
+
+##align subject, activity and X data in one data frame
+combo <- cbind(subject, activity, combo_X)
+
+#clean up workspace - remove unneeded objects
+rm(train_X, test_X, train_X_sub, test_X_sub, feature_names,clean_feature_names, subject, activity, combo_X, desired_feature_indicesL, mycols)
+
+
+
 
 ###melt data for desired summarized data
