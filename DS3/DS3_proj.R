@@ -28,9 +28,9 @@ if (!file.exists(uncompressed_localfile)) {
 } 
 
 ###ingest single column data inputs into R
-train_subj <-  read.table("UCI HAR Dataset/train/subject_train.txt",header=F,sep="")
+train_subj <-  read.table("UCI HAR Dataset/train/subject_train.txt", colClasses = "factor", header=F,sep="")
 train_activity <-  read.table("UCI HAR Dataset/train/y_train.txt", colClasses = "factor",header=F,sep="")
-test_subj <-  read.table("UCI HAR Dataset/test/subject_test.txt",header=F,sep="")
+test_subj <-  read.table("UCI HAR Dataset/test/subject_test.txt", colClasses = "factor", header=F,sep="")
 test_activity <-  read.table("UCI HAR Dataset/test/y_test.txt", colClasses = "factor",header=F,sep="")
 
 ###merge train and test data
@@ -90,7 +90,17 @@ combo <- cbind(subject, activity, combo_X)
 #clean up workspace - remove unneeded objects
 rm(train_X, test_X, train_X_sub, test_X_sub, feature_names,clean_feature_names, subject, activity, combo_X, desired_feature_indicesL, mycols)
 
+all_names <- names(combo)
+means <- all_names[-(1:2)]
 
 
-
-###melt data for desired summarized data
+###manipulate data for desired summarized data
+#test <- c("tBodyAcc_mean_X","fBodyAccJerkMag_mean")
+#foo <- c("tBodyAcc_mean_X")
+#following works (single value)
+#final <- by(combo[,foo],INDICES=list(combo$subject,combo$activity), FUN=mean)
+#following works (for multiple values, need to use colMeans)
+#final <- by(combo[,test],INDICES=list(combo$subject,combo$activity), FUN=colMeans)
+#following works (tapply instead of by)
+#single <- tapply(X=combo$fBodyGyroJerkMag_std,INDEX=list(combo$subject,combo$activity), FUN=mean)
+final <- by(combo[,means],INDICES=list(combo$subject,combo$activity), FUN=colMeans)
