@@ -62,19 +62,23 @@ feature_names <- unlist(read.table("UCI HAR Dataset/features.txt",colClasses=myc
 ###identify subset of mean and std features from full feature list
 #desired_feature_indices <- grep("mean|std", clean_feature_names)
 desired_feature_indices <- grep("mean\\(\\)|std\\(\\)", feature_names)
+desired_feature_indicesL <- grepl("mean\\(\\)|std\\(\\)", feature_names)
 #desired_features <- feature_names[desired_feature_indices]
 
+
+### Give X columns the feature names from features.txt
 ### pull only desired columns into data set with desired_feature_indices
 ### create desired_cols vector to restrict loaded features
-
 #load training and test set
-#train_X <- read.table("UCI HAR Dataset/train/X_train.txt",header=F,sep="")
-#test_X <- read.table("UCI HAR Dataset/test/X_test.txt",header=F,sep="")
+train_X <- read.table("UCI HAR Dataset/train/X_train.txt",header=F, col.names = feature_names, sep="")
+train_X_sub <- train_X[desired_feature_indicesL]
+test_X <- read.table("UCI HAR Dataset/test/X_test.txt",header=F,col.names = feature_names, sep="")
+test_X_sub <- test_X[desired_feature_indicesL]
 #combine in same order as subj and activity data
-combo_X <- rbind(train_X,test_X)
+combo_X <- rbind(train_X_sub,test_X_sub)
 
 ##TODO - align subject, activity and X data in one data frame
-combo <- cbind(subject, activity)
+combo <- cbind(subject, activity, combo_X)
 
 ###remove invalid characters from feature names
 #lapply(feature_names, )
@@ -83,13 +87,6 @@ clean_feature_names <- gsub("\\)", "", clean_feature_names)
 clean_feature_names <- gsub("-", "_", clean_feature_names)
 clean_feature_names <- gsub("\\,", "_", clean_feature_names)
 clean_feature_names <- gsub("BodyBody", "Body", clean_feature_names)
-###the desired_features subset only has parens and dashes and they aren't that meaningful
-#DEBUG dash <-  feature_names[grep("-", fixed=TRUE, feature_names)]
-#DEBUG pipe <-  feature_names[grep("|", fixed=TRUE, feature_names)]
-#DEBUG slash <-  feature_names[grep("\\", fixed=TRUE, feature_names)]
-#DEBUG oparen <-  feature_names[grep("(", fixed=TRUE, feature_names)]
-#DEBUG cparen <-  feature_names[grep(")", fixed=TRUE, feature_names)]
-#DEBUG parens <-  feature_names[grep("())", fixed=TRUE, feature_names)]
 ###set column names to labels from features.txt
 
 ###melt data for desired summarized data
