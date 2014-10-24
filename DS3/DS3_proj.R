@@ -90,17 +90,39 @@ combo <- cbind(subject, activity, combo_X)
 #clean up workspace - remove unneeded objects
 rm(train_X, test_X, train_X_sub, test_X_sub, feature_names,clean_feature_names, subject, activity, combo_X, desired_feature_indicesL, mycols)
 
-all_names <- names(combo)
-means <- all_names[-(1:2)]
-
 
 ###manipulate data for desired summarized data
-#test <- c("tBodyAcc_mean_X","fBodyAccJerkMag_mean")
+#twofoo <- c("tBodyAcc_mean_X","fBodyAccJerkMag_mean")
 #foo <- c("tBodyAcc_mean_X")
 #following works (single value)
-#final <- by(combo[,foo],INDICES=list(combo$subject,combo$activity), FUN=mean)
+foo_test <- by(combo[,foo],INDICES=list(combo$subject,combo$activity), FUN=mean)
 #following works (for multiple values, need to use colMeans)
-#final <- by(combo[,test],INDICES=list(combo$subject,combo$activity), FUN=colMeans)
+#final <- by(combo[,twofoo],INDICES=list(combo$subject,combo$activity), FUN=colMeans)
 #following works (tapply instead of by)
 #single <- tapply(X=combo$fBodyGyroJerkMag_std,INDEX=list(combo$subject,combo$activity), FUN=mean)
-final <- by(combo[,means],INDICES=list(combo$subject,combo$activity), FUN=colMeans)
+###first working solution
+#final <- by(combo[,-(1:2)],INDICES=list(combo$subject,combo$activity), FUN=colMeans)
+#attempt to make result not a list?
+#final <- by(combo[,-(1:2)],INDICES=list(combo$subject,combo$activity), FUN=colMeans, simplify = FALSE)
+#attempt to make result not a list?
+#final <- aggregate.data.frame(combo[,-(1:2)],by=list(combo$subject,combo$activity), FUN=colMeans)
+#creates a matrix from final which is a object of class by
+
+library(plyr)
+#tried turning list into data frame but loses the two "by" indices
+#new_tidy <- ldply(final)
+##first plyr-based attempt
+##grouped <- group_by(combo, subject, activity)
+##new_tidy <- summarize(grouped, colMeans(grouped$clean_feature_names))
+####final working solution
+new_tidy <- ddply(combo, c("subject","activity"),numcolwise(mean) )
+
+
+#output <- rbind(final)
+write.table(new_tidy, file = "tidy_data.txt", row.name=FALSE)
+#reconstituting from output fails - not the right format
+#reconst <- read.table("tidy_data.txt", header = TRUE)
+
+
+###
+#Try plyr
