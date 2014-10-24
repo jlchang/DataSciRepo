@@ -4,12 +4,12 @@ The data set has three types of data:
 - feature data, 561 columns of data derived from accelerometer and gyroscope data
 - subject data, a single column of data indicating the individual who was measured
 - activity data, a single column of data indicating the type of activity 
-> 1 WALKING
-> 2 WALKING_UPSTAIRS
-> 3 WALKING_DOWNSTAIRS
-> 4 SITTING
-> 5 STANDING
-> 6 LAYING
+1. WALKING
+2. WALKING_UPSTAIRS
+3. WALKING_DOWNSTAIRS
+4. SITTING
+5. STANDING
+6. LAYING
 
 The data set was also divided into two parts, a training set and a test set.
 
