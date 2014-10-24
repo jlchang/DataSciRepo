@@ -53,7 +53,7 @@ mean(): Mean value
 std(): Standard deviation
 
 
-The complete list of variables of each feature vector is shown below:
+**In tidy_data.txt the mean for the following 66 variables was calculated for each of the 30 subjects performing each of the 6 activities**:
 
 tBodyAcc_mean_X
 tBodyAcc_mean_Y
