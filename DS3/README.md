@@ -45,6 +45,7 @@ desired_feature_indices <- grepl("mean\\(\\)|std\\(\\)", feature_names)
 
 **Appropriately label the data set with descriptive variable names** by removing characters that are inappropriate in standard variable names (ie. characters that can cause issues for some types of code)
 also correct non-meaningful duplication of text on "BodyBody"
+underscores were retained for readability (originally used in place of commas to separate the numeric elements in variable names that would have collapsed "17,24" to "1724")
 ```
 clean_feature_names <- gsub('\\(', "", feature_names)
 clean_feature_names <- gsub("\\)", "", clean_feature_names)
